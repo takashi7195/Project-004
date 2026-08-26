@@ -219,3 +219,9 @@ GRANT SELECT, INSERT ON TABLE public.comments TO anon;
 4. ページ再読み込み後も旧Supabaseへの通信は表示されなかった
 
 したがって、Project-004は現在、新Supabase `ainwtluvzixkbstuwnvk.supabase.co` を使用して動作しており、旧Supabaseへの通信は確認されない状態になった。
+
+### 2026-08-26 19:30
+- GitHubリポジトリへの初回プッシュ完了。
+- Project-004として独立運用体制を確立。
+- Supabase接続設定の完全分離および初期動作確認完了。
+- ワーキングツリーのクリーンアップ（テスト用ファイル削除）完了。

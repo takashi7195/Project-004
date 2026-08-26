@@ -35,10 +35,13 @@ function formatDate(isoString) {
     if (!isoString) return '日時不明';
     const date = new Date(isoString);
     if (isNaN(date.getTime())) return '日時不明';
-    return new Intl.DateTimeFormat('ja-JP', {
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit'
-    }).format(date);
+    
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    return `${y}/${m}/${d} ${hh}:${mm}`;
 }
 
 export async function saveComment(name, comment, reply) {
@@ -101,7 +104,14 @@ export async function loadComments(isMore = false) {
         if (!document.getElementById('no-more-comments')) {
             const noMore = document.createElement('div');
             noMore.id = 'no-more-comments';
-            noMore.textContent = 'これ以上コメントはありません';
+            noMore.style.fontSize = '0.7em';
+            noMore.style.color = '#999';
+            noMore.style.textAlign = 'center';
+            noMore.style.margin = '0';
+            noMore.style.padding = '0';
+            noMore.style.lineHeight = '1';
+            noMore.style.height = '1em';
+            noMore.textContent = 'END';
             history.appendChild(noMore);
         }
     }

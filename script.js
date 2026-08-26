@@ -261,6 +261,24 @@ function runValidation(stadium, iterations) {
 
 // AIタカシのコメント機能
 
+const modal = document.getElementById('input-modal');
+const openBtn = document.getElementById('open-form-btn');
+const closeBtn = document.getElementById('close-form-btn');
+
+openBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+});
+
+closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+});
+
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.add('hidden');
+    }
+});
+
 document.getElementById('send-btn').addEventListener('click', async () => {
     const nameInput = document.getElementById('user-name');
     const commentInput = document.getElementById('user-comment');
@@ -277,6 +295,9 @@ document.getElementById('send-btn').addEventListener('click', async () => {
         await saveComment(name, comment, reply);
         addCommentToUI(name, comment, reply);
         commentInput.value = '';
+        
+        // 送信成功後にモーダルを閉じる
+        modal.classList.add('hidden');
     } catch (error) {
         alert('コメントの保存に失敗しました。');
     } finally {

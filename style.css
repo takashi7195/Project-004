@@ -59,8 +59,8 @@ select { padding: 10px; font-size: 18px; width: 100%; }
 }
 
 @media (max-width: 600px) {
-  body { padding-top: calc(4vh + env(safe-area-inset-top)); }
-  .container { padding: 16px; width: 90%; margin: 0 auto; box-sizing: border-box; }
+  body { padding-top: calc(4vh + env(safe-area-inset-top)); height: 100dvh; overflow: hidden; }
+  .container { padding: 16px; width: 90%; margin: 0 auto; box-sizing: border-box; flex: 0 0 auto; }
   h1 { font-size: 20px; }
   .selectors { margin-top: 15px; }
   select { padding: 8px; font-size: 16px; width: 46%; }
