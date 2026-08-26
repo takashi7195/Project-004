@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIタカシの3連単予想</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="takashi.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AIタカシの3連単予想</h1>
+        <div class="selectors">
+            <select id="stadium-select">
+                <option value="桐生">桐生</option>
+                <option value="戸田">戸田</option>
+                <option value="江戸川">江戸川</option>
+                <option value="平和島">平和島</option>
+                <option value="多摩川">多摩川</option>
+                <option value="浜名湖">浜名湖</option>
+                <option value="蒲郡">蒲郡</option>
+                <option value="常滑">常滑</option>
+                <option value="津">津</option>
+                <option value="三国">三国</option>
+                <option value="びわこ">びわこ</option>
+                <option value="住之江">住之江</option>
+                <option value="尼崎">尼崎</option>
+                <option value="鳴門">鳴門</option>
+                <option value="丸亀">丸亀</option>
+                <option value="児島">児島</option>
+                <option value="宮島">宮島</option>
+                <option value="徳山">徳山</option>
+                <option value="下関">下関</option>
+                <option value="若松">若松</option>
+                <option value="芦屋">芦屋</option>
+                <option value="福岡">福岡</option>
+                <option value="唐津">唐津</option>
+                <option value="大村">大村</option>
+            </select>
+            <select id="race-select">
+                <option value="1R">1R</option>
+                <option value="2R">2R</option>
+                <option value="3R">3R</option>
+                <option value="4R">4R</option>
+                <option value="5R">5R</option>
+                <option value="6R">6R</option>
+                <option value="7R">7R</option>
+                <option value="8R">8R</option>
+                <option value="9R">9R</option>
+                <option value="10R">10R</option>
+                <option value="11R">11R</option>
+                <option value="12R">12R</option>
+            </select>
+        </div>
+
+        <div id="results">
+            <div class="slot" id="slot-1"><div class="reel"></div></div>
+            <div class="slot" id="slot-2"><div class="reel"></div></div>
+            <div class="slot" id="slot-3"><div class="reel"></div></div>
+        </div>
+
+        <button id="start-btn">START</button>
+    </div>
+
+    <div id="takashi-chat">
+        <h3>コメント</h3>
+        <div id="comment-history"></div>
+        <div class="input-area">
+            <input type="text" id="user-name" placeholder="名前 (匿名)">
+            <input type="text" id="user-comment" placeholder="コメント">
+            <button id="send-btn">送信</button>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
