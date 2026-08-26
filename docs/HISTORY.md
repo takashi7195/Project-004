@@ -189,3 +189,33 @@ README.mdに公開URLを追記。
   - 対応方針: 今後の新規コメントで正常な created_at (now()) が生成されるよう、コメントデータを全削除してリセットする方針を決定
   - 実行: Supabase上の comments テーブルのレコード全削除を実施
 
+### 2026-08-26 18:30
+【原因】
+Project-004のコードは新Supabase
+`ainwtluvzixkbstuwnvk.supabase.co`
+を使用しており、旧Supabase
+`afozqmhxwcaiefwimjjn.supabase.co`
+のURL・キーはコードベースに残っていませんでした。
+
+コメント保存に失敗していた直接の原因は、新Supabaseの `public.comments` テーブルに対して、APIから使用する `anon` ロールのテーブル権限が不足していたことでした。
+
+確認した権限では、`anon` に `REFERENCES`、`TRIGGER`、`TRUNCATE` はありましたが、必要な `SELECT` と `INSERT` がありませんでした。
+
+【解決方法】
+Supabase SQL Editorで以下を実行しました。
+
+GRANT SELECT, INSERT ON TABLE public.comments TO anon;
+
+実行結果：
+`Success. No rows returned`
+
+既存のRLSポリシーについては、SELECTポリシーとINSERTポリシーがすでに存在していたため、変更・削除・追加は行っていません。
+
+【解決後の確認】
+
+1. コメント読み込み → 正常
+2. コメント送信・保存 → 正常
+3. Networkで旧Supabase `afozqmhxwcaiefwimjjn.supabase.co` をフィルタして確認
+4. ページ再読み込み後も旧Supabaseへの通信は表示されなかった
+
+したがって、Project-004は現在、新Supabase `ainwtluvzixkbstuwnvk.supabase.co` を使用して動作しており、旧Supabaseへの通信は確認されない状態になった。
