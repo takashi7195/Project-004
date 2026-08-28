@@ -8,10 +8,16 @@
     <link rel="stylesheet" href="takashi.css">
 </head>
 <body>
-    <div class="container">
-        <h1>AIタカシの3連単予想</h1>
-        <div class="selectors">
-            <select id="stadium-select">
+    <main class="app-shell">
+        <header class="app-header">
+            <div>
+                <h1>AIタカシの3連単予想</h1>
+            </div>
+        </header>
+
+        <section class="prediction-panel">
+        <div class="selectors" aria-label="予想条件">
+            <select id="stadium-select" aria-label="会場">
                 <option value="桐生">桐生</option>
                 <option value="戸田">戸田</option>
                 <option value="江戸川">江戸川</option>
@@ -37,7 +43,7 @@
                 <option value="唐津">唐津</option>
                 <option value="大村">大村</option>
             </select>
-            <select id="race-select">
+            <select id="race-select" aria-label="レース">
                 <option value="1R">1R</option>
                 <option value="2R">2R</option>
                 <option value="3R">3R</option>
@@ -53,20 +59,23 @@
             </select>
         </div>
 
-        <div id="results">
+        <div id="results" aria-label="3連単予想結果">
             <div class="slot" id="slot-1"><div class="reel"></div></div>
             <div class="slot" id="slot-2"><div class="reel"></div></div>
             <div class="slot" id="slot-3"><div class="reel"></div></div>
         </div>
 
-        <button id="start-btn">START</button>
-    </div>
+        <button id="start-btn" type="button"><span>START</span></button>
+        </section>
 
-    <div id="takashi-chat">
+    <section id="takashi-chat" aria-labelledby="comments-title">
         <div id="comment-history"></div>
-    </div>
+    </section>
+    </main>
     
-    <button id="open-form-btn">💬</button>
+    <button id="open-form-btn" type="button" aria-label="コメントを投稿" title="コメントを投稿">
+        <span aria-hidden="true"></span>
+    </button>
 
     <div id="input-modal" class="hidden">
         <button id="close-form-btn">×</button>
