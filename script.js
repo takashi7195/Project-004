@@ -43,11 +43,96 @@ const STADIUM_DATA = {
 
 const startBtn = document.getElementById('start-btn');
 const stadiumSelect = document.getElementById('stadium-select');
+const raceSelect = document.getElementById('race-select');
 const slots = [
   document.getElementById('slot-3'),
   document.getElementById('slot-2'),
   document.getElementById('slot-1')
 ];
+const STORAGE_KEY = 'takashi-3renkan-state-v1';
+const COMMENT_DRAFT_KEY = 'takashi-3renkan-comment-draft-v1';
+const DEFAULT_UI_STATE = {
+  stadium: '桐生',
+  race: '1R',
+  result: [1, 2, 3]
+};
+
+function readStoredState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return { ...DEFAULT_UI_STATE, ...parsed };
+  } catch (error) {
+    console.warn('保存済み状態の読み込みに失敗しました。', error);
+    return { ...DEFAULT_UI_STATE };
+  }
+}
+
+function saveStoredState(state) {
+  try {
+    const nextState = { ...DEFAULT_UI_STATE, ...state };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+  } catch (error) {
+    console.warn('状態の保存に失敗しました。', error);
+  }
+}
+
+function persistCurrentState() {
+  const currentState = readStoredState();
+  currentState.stadium = stadiumSelect.value;
+  currentState.race = raceSelect.value;
+  saveStoredState(currentState);
+}
+
+function readDraftState() {
+  try {
+    const raw = localStorage.getItem(COMMENT_DRAFT_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    console.warn('下書きの読み込みに失敗しました。', error);
+    return {};
+  }
+}
+
+function saveDraftState(name, comment) {
+  try {
+    localStorage.setItem(COMMENT_DRAFT_KEY, JSON.stringify({ name, comment }));
+  } catch (error) {
+    console.warn('下書きの保存に失敗しました。', error);
+  }
+}
+
+function clearDraftState() {
+  try {
+    localStorage.removeItem(COMMENT_DRAFT_KEY);
+  } catch (error) {
+    console.warn('下書きの削除に失敗しました。', error);
+  }
+}
+
+function restoreSlotPosition(slot, finalBoat) {
+  const reel = slot.querySelector('.reel');
+  const item = reel.querySelector('.item');
+  if (!item) return;
+
+  const itemHeight = item.offsetHeight;
+  const targetY = -(finalBoat - 1 + 6) * itemHeight;
+  slot.className = `slot bg-${finalBoat}`;
+  reel.style.transition = 'none';
+  reel.style.transform = `translateY(${targetY}px)`;
+}
+
+function restoreSavedResult() {
+  const savedState = readStoredState();
+  const result = Array.isArray(savedState.result) && savedState.result.length === 3
+    ? savedState.result
+    : DEFAULT_UI_STATE.result;
+
+  const [first, second, third] = result;
+  restoreSlotPosition(slots[0], third);
+  restoreSlotPosition(slots[1], second);
+  restoreSlotPosition(slots[2], first);
+}
 
 function generateCombinations() {
   const combs = [];
@@ -131,6 +216,15 @@ function populateReel(reel) {
 
 // 初期表示処理
 document.addEventListener('DOMContentLoaded', () => {
+  const draftState = readDraftState();
+  const nameInput = document.getElementById('user-name');
+  const commentInput = document.getElementById('user-comment');
+  const savedState = readStoredState();
+
+  const uiState = readStoredState();
+  stadiumSelect.value = uiState.stadium || DEFAULT_UI_STATE.stadium;
+  raceSelect.value = uiState.race || DEFAULT_UI_STATE.race;
+
   slots.forEach((slot, index) => {
     const reel = slot.querySelector('.reel');
     populateReel(reel);
@@ -140,7 +234,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const offset = 2 - index; // 3->2, 2->1, 1->0
     reel.style.transform = `translateY(calc(var(--item-height) * -${12 + offset}))`;
   });
-  
+
+  if (Array.isArray(uiState.result) && uiState.result.length === 3) {
+    restoreSavedResult();
+  } else {
+    restoreSlotPosition(slots[0], DEFAULT_UI_STATE.result[2]);
+    restoreSlotPosition(slots[1], DEFAULT_UI_STATE.result[1]);
+    restoreSlotPosition(slots[2], DEFAULT_UI_STATE.result[0]);
+  }
+
+  if (nameInput && draftState.name) {
+    nameInput.value = draftState.name;
+  }
+  if (commentInput && draftState.comment) {
+    commentInput.value = draftState.comment;
+  }
+
+  stadiumSelect.addEventListener('change', persistCurrentState);
+  raceSelect.addEventListener('change', persistCurrentState);
+
   loadComments();
 });
 
@@ -167,6 +279,12 @@ startBtn.addEventListener('click', async () => {
   await stopRoulette(slots[0], result[2], 3000);  // 右(slot-3)に3着
   await stopRoulette(slots[1], result[1], 6000);  // 中央(slot-2)に2着 (3000+6000=9000ms)
   await stopRoulette(slots[2], result[0], 9000);  // 左(slot-1)に1着 (9000+9000=18000ms)
+
+  const currentState = readStoredState();
+  currentState.stadium = stadium;
+  currentState.race = raceSelect.value;
+  currentState.result = [...result];
+  saveStoredState(currentState);
 
   startBtn.disabled = false;
 });
@@ -279,9 +397,17 @@ modal.addEventListener('click', (e) => {
     }
 });
 
+const nameInput = document.getElementById('user-name');
+const commentInput = document.getElementById('user-comment');
+
+nameInput.addEventListener('input', () => {
+    saveDraftState(nameInput.value, commentInput.value);
+});
+commentInput.addEventListener('input', () => {
+    saveDraftState(nameInput.value, commentInput.value);
+});
+
 document.getElementById('send-btn').addEventListener('click', async () => {
-    const nameInput = document.getElementById('user-name');
-    const commentInput = document.getElementById('user-comment');
     const sendBtn = document.getElementById('send-btn');
 
     const comment = commentInput.value;
@@ -295,6 +421,8 @@ document.getElementById('send-btn').addEventListener('click', async () => {
         await saveComment(name, comment, reply);
         addCommentToUI(name, comment, reply);
         commentInput.value = '';
+        nameInput.value = nameInput.value;
+        clearDraftState();
         
         // 送信成功後にモーダルを閉じる
         modal.classList.add('hidden');
